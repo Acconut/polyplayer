@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    
+    <body>
+        
+        <div id="player"></div>
+        <div id="state">...</div>
+        <div id="playProgressNum"></div>
+        <progress id="playProgress"></progress>
+        <button id="play">Play</button>
+        <button id="pause" disabled>Pause</button>
+        <button id="stop">Stop</button>
+        <button id="seek">Seek</button>
+        <button id="seekTo">Seek to</button>
+        
+        <hr>
+        <div id="title"></div>
+        <div id="duration"></div>
+        <img id="thumbnail">
+        
+        <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/backbone/backbone.js"></script>
+        <script src="../bower_components/uri.js/src/URI.js"></script>
+        <script src="../bower_components/swfobject/swfobject/swfobject.js"></script>
+        
+        <script src="../lib/player.js"></script>
+        <script src="../lib/model.js"></script>
+        <script src="../lib/youtube.js"></script>
+        
+        <!-- Used for testing, no dependency -->
+        <script src="../bower_components/zepto/zepto.js"></script>
+        
+        <script>
+            var statesByName = _.invert(Player.states),
+                $state = $("#state"),
+                $playProgNum = $("#playProgressNum"),
+                $playProg = $("#playProgress"),
+                $play = $("#play"),
+                $pause = $("#pause"),
+                $stop = $("#stop"),
+                $title = $("#title"),
+                $duration = $("#duration"),
+                $thumbnail = $("#thumbnail"),
+                $seek = $("#seek"),
+                $seekTo = $("#seekTo");
+            
+            var player = new Player({
+                
+                videoUrl: "http://www.youtube.com/watch?v=IzTYvTI7OnI",
+                
+                container: "#player"
+                
+            });
+            
+            player.on("stateChange", function(state) {
+                
+                $state.text(statesByName[state]);
+                
+            });
+            
+            player.on("playProgress", function(data) {
+                
+                var sec = Math.floor(data.currentPosition / 1000),
+                    min = Math.floor(sec / 60);
+                
+                sec = sec % 60;
+                
+                $playProgNum.text(min + ":" + sec);
+                $playProg.attr("value", data.relativePosition);
+                
+            });
+            
+            player.on("play", function() {
+                $play.attr("disabled", true);
+                $pause.removeAttr("disabled");
+            });
+            
+            player.on("pause", function() {
+                $play.removeAttr("disabled");
+                $pause.attr("disabled", true);
+            });
+            
+            $play.click(_.bind(player.play, player));
+            $pause.click(_.bind(player.pause, player));
+            $stop.click(_.bind(player.stop, player));
+            
+            player.getDetails(function(details) {
+                $title.text(details.title);
+                $thumbnail.attr("src", details.thumbnails[0].url);
+                $duration.text(details.duration / 1000 / 60);
+            });
+            
+            $seek.click(function() {
+                player.seek(parseFloat(prompt("Enter a number between 0 and 1"), 10));
+            });
+            
+            $seekTo.click(function() {
+                player.seekTo(parseInt(prompt("Enter ms"), 10));
+            });
+            
+        </script>
+    </body>
+</html>

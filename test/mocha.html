@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    
+    <body>
+        
+        <div id="mocha"></div>
+        
+        <div id="player"></div>
+        
+        <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/backbone/backbone.js"></script>
+        <script src="../bower_components/uri.js/src/URI.js"></script>
+        <script src="../bower_components/swfobject/swfobject/swfobject.js"></script>
+        
+        <script src="../vendor/soundcloud.js"></script>
+        
+        <script src="../lib/player.js"></script>
+        <script src="../lib/model.js"></script>
+        <script src="../lib/soundcloud.js"></script>
+        <script src="../lib/youtube.js"></script>
+        
+        <!-- Used for testing, no dependency -->
+        <script src="../bower_components/chai/chai.js"></script>
+        <script src="../bower_components/mocha/mocha.js"></script>
+        <link rel="stylesheet" type="text/css" href="../bower_components/mocha/mocha.css">
+        
+        <script>
+            
+            mocha.setup("bdd");
+            var a = chai.assert;
+            
+            var providers = {
+                YouTube : {
+                    url: "http://www.youtube.com/watch?v=IzTYvTI7OnI",
+                    title: "Mashup Germany - The Rock Harmony",
+                    duration: 208000,
+                    createdAt: new Date("Tue, 20 Aug 2013 20:41:43 GMT").toString()
+                },
+                Soundcloud: {
+                    url: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet",
+                    title: "Mashup-Germany - Berlin Banquet Bootleg",
+                    duration: 233806,
+                    createdAt: new Date("Fri, 06 Apr 2012 11:49:43 GMT")
+                }
+            };
+            
+            _.each(providers, function(p, i) {
+                runTest(i, p);
+            });
+            
+            mocha.run();
+            
+            function runTest(name, p) {
+                
+                describe(name, function() {
+                    
+                    var player;
+                    
+                    before(function() {
+                        player = new Player({
+            
+                            videoUrl: p.url,
+                        
+                            container: "#player" 
+                        
+                        });
+                    });
+                    
+                    after(function() {
+                        player.stop();
+                    });
+                    
+                    this.timeout(3 * 1000);
+                    
+                    describe("#getState", function() {
+                        
+                        it("should be in loading state", function() {
+                            a.equal(player.getState(), Player.states.LOADING);
+                        });
+                        
+                        it("should be fired a ready event", function(done) {
+                            player.once("ready", done);
+                        });
+                        
+                        it("should be changed to ready state", function() {
+                            a.equal(player.getState(), Player.states.READY);
+                        });
+                    });
+                    
+                    describe("#getDetails", function() {
+                        
+                        var details;
+                        
+                        before(function(done) {
+                            player.getDetails(function(d) {
+                                details = d;
+                                done();
+                            });
+                        });
+                        
+                        it("should have a correct title", function() {
+                            a.equal(details.title, p.title);
+                        });
+                        
+                        it("should have a correct duration", function() {
+                            a.isNumber(details.duration);
+                            a.equal(details.duration, p.duration);
+                            a.equal(details.duration, player.getDuration());
+                        });
+                        
+                        it("should have a correct date", function() {
+                            a.instanceOf(details.createdAt, Date);
+                            a.equal(details.createdAt.toString(), p.createdAt.toString());
+                        });
+                        
+                        describe("#thumbnails", function() {
+                            
+                            it("should have at least one thumbnail", function() {
+                                a.ok(details.thumbnails.length > 0);
+                            });
+                            
+                            it("each one should have valid properties", function() {
+                                
+                                _.each(details.thumbnails, function(t) {
+                                    
+                                    a.isNumber(t.height);
+                                    a.isNumber(t.width);
+                                    a.isString(t.url);
+                                    
+                                });
+                                
+                            });
+                        });
+                        
+                    });
+                    
+                    describe("#play", function() {
+                        
+                        it("should fire a play event", function(done) {
+                            player.once("play", done);
+                            player.play();
+                        });
+                        
+                        it("should have the playing state", function() {
+                            a.equal(player.getState(), Player.states.PLAYING);
+                        });
+                        
+                        it("should fire progress events", function(done) {
+                            player.once("playProgress", function(progress) {
+                                a.isNumber(progress.currentPosition);
+                                a.isNumber(progress.relativePosition);
+                                a.equal(progress.relativePosition, progress.currentPosition / player.getDuration());
+                                done();
+                            });
+                        });
+                        
+                    });
+                    
+                    describe("#pause", function() {
+                        
+                        it("should fire a pause event", function(done) {
+                            player.once("pause", done);
+                            player.pause();
+                        });
+                        
+                        it("should have the paused state", function() {
+                            a.equal(player.getState(), Player.states.PAUSED);
+                        });
+                        
+                    });
+                    
+                    describe("#getCurrentPosition", function() {
+                        
+                        it("should be close to 1000ms", function() {
+                            var pos = player.getCurrentPosition();
+                            a.isNumber(pos);
+                            a.closeTo(pos, 1000, 1000);
+                        });
+                        
+                    });
+                    
+                    describe("#seekTo", function() {
+                        
+                        it("should seek to an absolute position", function() {
+                            player.seekTo(10 * 1000);
+                            a.equal(player.getCurrentPosition(), 10 * 1000);
+                        });
+                        
+                        it("should fire a progress event", function(done) {
+                            player.once("playProgress", function(data) {
+                                a.equal(data.currentPosition, 20 * 1000);
+                                done();
+                            });
+                            
+                            player.seekTo(20 * 1000);
+                        });
+                        
+                        it("should play from this position", function(done) {
+                            
+                            // YouTube needs some secounds to realize it's
+                            // supposed to play from a specified position.
+                            // We wait until we get a good progress event
+                            // to succed the test.
+                            // If there is no good event the timeout will
+                            // bring the fail.
+                            player.on("playProgress", function(data) {
+                                console.log(data.currentPosition);
+                                if(Math.floor(data.currentPosition / 10000) === 2) {
+                                    a.ok(true);
+                                    done();
+                                }
+                            })
+                            
+                            player.play();
+                        });
+                        
+                    });
+                    
+                    describe("#seek", function() {
+                        
+                        it("should seek to a relative position", function() {
+                            player.seek(0.5);
+                            a.equal(player.getCurrentPosition(), player.getDuration() * 0.5);
+                        });
+                        
+                    });
+                    
+                    describe("#stop", function() {
+                        
+                        it("should fire a stop event", function(done) {
+                            player.once("stop", done);
+                            player.stop();
+                        });
+                        
+                        it("should have the stopped state", function() {
+                            a.equal(player.getState(), Player.states.STOPPED);
+                        });
+                        
+                        it("should be at the beginning", function() {
+                           a.equal(player.getCurrentPosition(), 0); 
+                        });
+                        
+                        it("should play form the beginning", function(done) {
+                            
+                            // YouTube needs some secounds to realize it's
+                            // supposed to play from a specified position.
+                            // We wait until we get a good progress event
+                            // to succed the test.
+                            // If there is no good event the timeout will
+                            // bring the fail.
+                            player.on("playProgress", function(data) {
+                                if(Math.floor(data.currentPosition / 10000) === 0) {
+                                    a.ok(true);
+                                    player.off("playProgress");
+                                    done();
+                                }
+                            })
+                            
+                            player.play();
+                        });
+                        
+                    });
+                    
+                    describe("#finish", function() {
+    
+                        it("should fire a finish event", function(done) {
+                            player.once("finish", done);
+                            player.seekTo(player.getDuration() - 1000);
+                        });
+                        
+                        it("should have the finished state", function() {
+                            a.equal(player.getState(), Player.states.FINISHED);
+                        });
+                    });
+                    
+                });
+            }
+            
+        </script>
+    </body>
+</html>
