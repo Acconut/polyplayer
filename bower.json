@@ -4,8 +4,7 @@
     "backbone": "~1.1.0",
     "underscore": "~1.5.2",
     "zepto": "~1.0.0",
-    "uri.js": "~1.11.2",
-    "swfobject": "*"
+    "uri.js": "~1.11.2"
   },
   "devDependencies": {
     "mocha": "visionmedia/mocha#~1.14.0",

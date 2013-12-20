@@ -13,7 +13,6 @@
         <script src="../bower_components/underscore/underscore.js"></script>
         <script src="../bower_components/backbone/backbone.js"></script>
         <script src="../bower_components/uri.js/src/URI.js"></script>
-        <script src="../bower_components/swfobject/swfobject/swfobject.js"></script>
         
         <script src="../vendor/soundcloud.js"></script>
         
@@ -82,6 +81,10 @@
                         });
                         
                         it("should be fired a ready event", function(done) {
+                            // This may take some time since it's loading
+                            // a lot of thrid parties' scripts
+                            this.timeout(10 * 1000);
+                            
                             player.once("ready", done);
                         });
                         
