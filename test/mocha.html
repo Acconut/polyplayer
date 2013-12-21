@@ -46,6 +46,51 @@
                 }
             };
             
+            describe("Player", function() {
+                
+                it("should throw error when using wrong provider", function() {
+                    
+                    a.throws(function() {
+                        new Player({
+                            videoUrl: "http://dontknowbla.bla",
+                            container: "#dontcare"
+                        });
+                    }, "Unknown provider");
+                    
+                });
+                
+                it("should throw when YT url doesn't contain video ID", function() {
+                    
+                    a.throws(function() {
+                        new Player({
+                            videoUrl: "http://youtube.com/"
+                        });
+                    }, "YouTube requires a URL containing the video ID (v)");
+                    
+                });
+                
+                it("should throw when Soundcloud url is invald", function() {
+                    
+                    a.throws(function() {
+                        new Player({
+                            videoUrl: "http://soundcloud.com/"
+                        });
+                    }, "This is not a valid url to a song on Soundcloud");
+                    
+                });
+                
+                it("should throw when using Soundcloud set url", function() {
+                    
+                    a.throws(function() {
+                        new Player({
+                            videoUrl: "https://soundcloud.com/caswunn/sets/cas-one-chasing-greatness-pack"
+                        });
+                    }, "Soundcloud sets are not implemented yet");
+                    
+                });
+                
+            });
+            
             _.each(providers, function(p, i) {
                 runTest(i, p);
             });
