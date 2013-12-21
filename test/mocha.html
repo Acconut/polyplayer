@@ -323,10 +323,12 @@
                     });
                     
                     describe("#finish", function() {
-    
+                        // Vimeo in FF needs more time (up to 5000ms)
+                        this.timeout(10 * 1000);
+                        
                         it("should fire a finish event", function(done) {
                             player.once("finish", done);
-                            player.seekTo(player.getDuration() - 1000);
+                            player.seekTo(player.getDuration() - 2000);
                         });
                         
                         it("should have the finished state", function() {
