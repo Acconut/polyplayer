@@ -266,7 +266,6 @@
                             // If there is no good event the timeout will
                             // bring the fail.
                             player.on("playProgress", function(data) {
-                                console.log(data.currentPosition);
                                 if(Math.floor(data.currentPosition / 10000) === 2) {
                                     a.ok(true);
                                     done();
