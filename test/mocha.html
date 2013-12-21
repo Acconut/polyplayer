@@ -15,11 +15,13 @@
         <script src="../bower_components/uri.js/src/URI.js"></script>
         
         <script src="../vendor/soundcloud.js"></script>
+        <script src="../vendor/froogaloop.js"></script>
         
         <script src="../lib/player.js"></script>
         <script src="../lib/model.js"></script>
         <script src="../lib/soundcloud.js"></script>
         <script src="../lib/youtube.js"></script>
+        <script src="../lib/vimeo.js"></script>
         
         <!-- Used for testing, no dependency -->
         <script src="../bower_components/chai/chai.js"></script>
@@ -43,6 +45,12 @@
                     title: "Mashup-Germany - Berlin Banquet Bootleg",
                     duration: 233806,
                     createdAt: new Date("Fri, 06 Apr 2012 11:49:43 GMT")
+                },
+                Vimeo: {
+                    url: "http://vimeo.com/18890266",
+                    title: "Mashup-Germany \u2013 I just came to say hello",
+                    duration: 231000,
+                    createdAt: new Date("Mon, 17 Jan 2011 15:33:58 GMT")
                 }
             };
             
@@ -200,7 +208,10 @@
                             player.once("playProgress", function(progress) {
                                 a.isNumber(progress.currentPosition);
                                 a.isNumber(progress.relativePosition);
-                                a.equal(progress.relativePosition, progress.currentPosition / player.getDuration());
+                                
+                                // Our computed values may be "too" correct, e.g. 0.000878787878787878
+                                // So we'll round those
+                                a.closeTo(progress.relativePosition, progress.currentPosition / player.getDuration(), 0.001);
                                 done();
                             });
                         });
