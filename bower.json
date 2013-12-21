@@ -2,11 +2,11 @@
   "name": "polyplaver",
   "dependencies": {
     "backbone": "~1.1.0",
-    "underscore": "~1.5.2",
-    "zepto": "~1.0.0"
+    "underscore": "~1.5.2"
   },
   "devDependencies": {
     "mocha": "visionmedia/mocha#~1.14.0",
-    "chai": "chaijs/chai#~1.8.1"
+    "chai": "chaijs/chai#~1.8.1",
+    "zepto": "~1.0.0"
   }
 }
