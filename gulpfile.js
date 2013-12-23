@@ -4,6 +4,10 @@ var gulp = require("gulp"),
     footer = require("gulp-footer"),
     concat = require("gulp-concat");
 
+/**
+ * Concat all files from ./lib into ./polyplayer.js
+ * No vendors are included
+ */
 gulp.task("build", function() {
     
     gulp.src([
@@ -20,6 +24,10 @@ gulp.task("build", function() {
     
 });
 
+/**
+ * Concat and minify all files from ./lib into ./polyplayer.js
+ * No vendors are included
+ */
 gulp.task("build-minify", function() {
     
     gulp.src([
@@ -37,6 +45,10 @@ gulp.task("build-minify", function() {
     
 });
 
+/**
+ * Concat and minify all files from ./lib into ./polyplayer.js
+ * All vendors (soundcloud and vimeo (froogaloop.js)) are included
+ */
 gulp.task("build-vendor", function() {
         
     gulp.src([
@@ -56,6 +68,10 @@ gulp.task("build-vendor", function() {
     
 });
 
+/**
+ * Development task
+ * Run `build` for each change in ./lib
+ */
 gulp.task("default", function() {
     
     gulp.run("build");
@@ -66,6 +82,9 @@ gulp.task("default", function() {
     
 });
 
+/**
+ * Build polyplayer.js, polyplayer.min.js and polyplayer.vendor.min.js
+ */
 gulp.task("all", function() {
     gulp.run("build", "build-minify", "build-vendor");
 });
