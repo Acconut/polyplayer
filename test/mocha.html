@@ -17,11 +17,7 @@
         <script src="../vendor/soundcloud.js"></script>
         <script src="../vendor/froogaloop.js"></script>
         
-        <script src="../lib/player.js"></script>
-        <script src="../lib/model.js"></script>
-        <script src="../lib/soundcloud.js"></script>
-        <script src="../lib/youtube.js"></script>
-        <script src="../lib/vimeo.js"></script>
+        <script src="../polyplayer.js"></script>
         
         <!-- Used for testing, no dependency -->
         <script src="../bower_components/chai/chai.js"></script>
@@ -59,7 +55,7 @@
                 it("should throw error when using wrong provider", function() {
                     
                     a.throws(function() {
-                        new Player({
+                        new PP.Player({
                             videoUrl: "http://dontknowbla.bla",
                             container: "#dontcare"
                         });
@@ -70,7 +66,7 @@
                 it("should throw when YT url doesn't contain video ID", function() {
                     
                     a.throws(function() {
-                        new Player({
+                        new PP.Player({
                             videoUrl: "http://youtube.com/"
                         });
                     }, "YouTube requires a URL containing the video ID (v)");
@@ -80,7 +76,7 @@
                 it("should throw when Soundcloud url is invald", function() {
                     
                     a.throws(function() {
-                        new Player({
+                        new PP.Player({
                             videoUrl: "http://soundcloud.com/"
                         });
                     }, "This is not a valid url to a song on Soundcloud");
@@ -90,7 +86,7 @@
                 it("should throw when using Soundcloud set url", function() {
                     
                     a.throws(function() {
-                        new Player({
+                        new PP.Player({
                             videoUrl: "https://soundcloud.com/caswunn/sets/cas-one-chasing-greatness-pack"
                         });
                     }, "Soundcloud sets are not implemented yet");
@@ -112,7 +108,7 @@
                     var player;
                     
                     before(function() {
-                        player = new Player({
+                        player = new PP.Player({
             
                             videoUrl: p.url,
                         
@@ -130,7 +126,7 @@
                     describe("#getState", function() {
                         
                         it("should be in loading state", function() {
-                            a.equal(player.getState(), Player.states.LOADING);
+                            a.equal(player.getState(), PP.Player.states.LOADING);
                         });
                         
                         it("should be fired a ready event", function(done) {
@@ -142,7 +138,7 @@
                         });
                         
                         it("should be changed to ready state", function() {
-                            a.equal(player.getState(), Player.states.READY);
+                            a.equal(player.getState(), PP.Player.states.READY);
                         });
                     });
                     
@@ -201,7 +197,7 @@
                         });
                         
                         it("should have the playing state", function() {
-                            a.equal(player.getState(), Player.states.PLAYING);
+                            a.equal(player.getState(), PP.Player.states.PLAYING);
                         });
                         
                         it("should fire progress events", function(done) {
@@ -226,7 +222,7 @@
                         });
                         
                         it("should have the paused state", function() {
-                            a.equal(player.getState(), Player.states.PAUSED);
+                            a.equal(player.getState(), PP.Player.states.PAUSED);
                         });
                         
                     });
@@ -294,7 +290,7 @@
                         });
                         
                         it("should have the stopped state", function() {
-                            a.equal(player.getState(), Player.states.STOPPED);
+                            a.equal(player.getState(), PP.Player.states.STOPPED);
                         });
                         
                         it("should be at the beginning", function() {
@@ -332,7 +328,7 @@
                         });
                         
                         it("should have the finished state", function() {
-                            a.equal(player.getState(), Player.states.FINISHED);
+                            a.equal(player.getState(), PP.Player.states.FINISHED);
                         });
                     });
                     

@@ -1,0 +1,7 @@
+
+    var PP = {};
+    PP.Player = Player;
+    
+    window.PP = PP;
+    
+})(window);
