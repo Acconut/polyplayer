@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    
+    <body>
+        
+        <div id="player"></div>
+        <div id="state">...</div>
+        <div id="playProgressNum"></div>
+        <progress id="playProgress"></progress>
+        <button id="play">Play</button>
+        <button id="pause" disabled>Pause</button>
+        <button id="stop">Stop</button>
+        <button id="seek">Seek</button>
+        <button id="seekTo">Seek to</button>
+        <button id="next">Next</button>
+        
+        <br>
+        
+        Loop mode:
+        
+        <select id="loopmode">
+            <option value="0">NO</option>
+            <option value="1">NEXT</option>
+            <option value="2" selected>LOOP</option>
+            <option value="3">RANDOM</option>
+        </select>
+        
+        <hr>
+        <div id="title"></div>
+        <div id="duration"></div>
+        <img id="thumbnail">
+        
+        <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/backbone/backbone.js"></script>
+        <script src="//w.soundcloud.com/player/api.js"></script>
+        
+        <script src="../lib/player.js"></script>
+        <script src="../lib/model.js"></script>
+        <script src="../lib/vimeo.js"></script>
+        <script src="../lib/soundcloud.js"></script>
+        <script src="../vendor/froogaloop.js"></script>
+        <script src="../lib/playlist.js"></script>
+        
+        <!-- Used for testing, no dependency -->
+        <script src="../bower_components/zepto/zepto.js"></script>
+        
+        <script>
+            var statesByName = _.invert(Player.states),
+                $state = $("#state"),
+                $playProgNum = $("#playProgressNum"),
+                $playProg = $("#playProgress"),
+                $play = $("#play"),
+                $pause = $("#pause"),
+                $stop = $("#stop"),
+                $title = $("#title"),
+                $duration = $("#duration"),
+                $thumbnail = $("#thumbnail"),
+                $seek = $("#seek"),
+                $seekTo = $("#seekTo"),
+                $next = $("#next"),
+                $loopmode = $("#loopmode");
+            
+            var player = new Playlist([], {
+                
+                container: "#player"
+                
+            });
+            
+            player.on("stateChange", function(state) {
+                
+                $state.text(statesByName[state]);
+                
+            });
+            
+            player.on("playProgress", function(data) {
+                
+                var sec = Math.floor(data.currentPosition / 1000),
+                    min = Math.floor(sec / 60);
+                
+                sec = sec % 60;
+                
+                $playProgNum.text(min + ":" + sec);
+                $playProg.attr("value", data.relativePosition);
+                
+            });
+            
+            player.on("play", function() {
+                $play.attr("disabled", true);
+                $pause.removeAttr("disabled");
+            });
+            
+            player.on("pause", function() {
+                $play.removeAttr("disabled");
+                $pause.attr("disabled", true);
+            });
+            
+            $play.click(_.bind(player.play, player));
+            $pause.click(_.bind(player.pause, player));
+            $stop.click(_.bind(player.stop, player));
+            $next.click(_.bind(player.nextPlayer, player));
+            
+            player.on("playerChange", function() {
+                player.getDetails(function(details) {
+                    $title.text(details.title);
+                    $thumbnail.attr("src", details.thumbnails[0].url);
+                    $duration.text(details.duration / 1000 / 60);
+                });
+            });
+            
+            $seek.click(function() {
+                player.seek(parseFloat(prompt("Enter a number between 0 and 1"), 10));
+            });
+            
+            $seekTo.click(function() {
+                player.seekTo(parseInt(prompt("Enter ms"), 10));
+            });
+            
+            player.add({ videoUrl: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet" });
+            player.add({ videoUrl: "http://vimeo.com/18890266" });
+            
+            player.loopMode = Playlist.loopModes.LOOP;
+            
+            $loopmode.on("change", function() {
+                player.loopMode = parseInt($loopmode.val(), 10);
+            });
+            
+        </script>
+    </body>
+</html>

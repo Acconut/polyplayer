@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    
+    <body>
+        
+        <div id="mocha"></div>
+        
+        <div id="playlist"></div>
+        <div id="player"></div>
+        
+        <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/backbone/backbone.js"></script>
+        
+        <script src="../vendor/soundcloud.js"></script>
+        <script src="../vendor/froogaloop.js"></script>
+        
+        <script src="../polyplayer.js"></script>
+        
+        <!-- Used for testing, no dependency -->
+        <script src="../bower_components/chai/chai.js"></script>
+        <script src="../bower_components/mocha/mocha.js"></script>
+        <link rel="stylesheet" type="text/css" href="../bower_components/mocha/mocha.css">
+        
+        <script>
+            
+            mocha.setup("bdd");
+            var a = chai.assert;
+            
+            var providers = {
+                YouTube : {
+                    url: "http://www.youtube.com/watch?v=IzTYvTI7OnI",
+                    title: "Mashup Germany - The Rock Harmony",
+                    duration: 208000,
+                    createdAt: new Date("Tue, 20 Aug 2013 20:41:43 GMT").toString()
+                },
+                Soundcloud: {
+                    url: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet",
+                    title: "Mashup-Germany - Berlin Banquet Bootleg",
+                    duration: 233806,
+                    createdAt: new Date("Fri, 06 Apr 2012 11:49:43 GMT")
+                },
+                Vimeo: {
+                    url: "http://vimeo.com/18890266",
+                    title: "Mashup-Germany \u2013 I just came to say hello",
+                    duration: 231000,
+                    createdAt: new Date("Mon, 17 Jan 2011 15:33:58 GMT")
+                }
+            };
+            
+            var playlist;
+            describe("Playlist", function() {
+                
+                playlist = new PP.Playlist([], {
+                    container: "#playlist"
+                });
+                
+                this.timeout(10 * 1000);
+                
+                it("should have loop modes", function() {
+                    a.isDefined(PP.Playlist.loopModes.NO);
+                    a.isDefined(PP.Playlist.loopModes.NEXT);
+                    a.isDefined(PP.Playlist.loopModes.LOOP);
+                    a.isDefined(PP.Playlist.loopModes.RANDOM);
+                });
+                
+                it("should have no loop as default", function() {
+                    a.equal(playlist.loopMode, PP.Playlist.loopModes.NO);
+                });
+            
+                it("should not have a current player", function() {
+                    a.equal(playlist.getCurrentPlayer(), null);
+                });
+                
+                describe("#add", function() {
+                    
+                    it("should have no models", function() {
+                        a.equal(playlist.length, 0);
+                    });
+                    
+                    it("should add a player using options", function(done) {
+                        playlist.add({
+                            videoUrl: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet"
+                        });
+                        a.equal(playlist.length, 1);
+                        a.equal(document.getElementById("playlist").childElementCount, 1);
+                        playlist.once("ready", done);
+                    });
+                    
+                    it("should add a player instance", function(done) {
+                        var player = new PP.Player({
+                            container: "#player",
+                            videoUrl: "http://vimeo.com/18890266"
+                        });
+                        playlist.add(player);
+                        
+                        a.equal(playlist.length, 2);
+                        a.equal(document.getElementById("playlist").childElementCount, 1);
+                        a.equal(document.getElementById("player").childElementCount, 1);
+                        playlist.once("ready", done);
+                        
+                    });
+                    
+                });
+                
+                describe("#play", function() {
+                    
+                    it("should fire a play event", function(done) {
+                        playlist.once("play", done);
+                        playlist.play();
+                    });
+                    
+                    it("should be in playing state", function() {
+                        a.equal(playlist.getState(), PP.Player.states.PLAYING);
+                    });
+                    
+                    it("should have a current player", function() {
+                        var player = playlist.getCurrentPlayer();
+                        a.isDefined(player);
+                        a.equal(player.getState(), PP.Player.states.PLAYING);
+                    });
+                    
+                    it("should fire progress events", function(done) {
+                        playlist.once("playProgress", function(data) {
+                            a.isDefined(data.currentPosition);
+                            a.isDefined(data.relativePosition);
+                            done();
+                        });
+                    });
+                    
+                });
+                
+                describe("#pause", function() {
+                    
+                    before(function(done) {
+                        setTimeout(done, 1000);
+                    });
+                    
+                    it("should fire a pause event", function(done) {
+                        playlist.once("pause", done);
+                        playlist.pause();
+                    });
+                    
+                    it("should be in paused state", function() {
+                        a.equal(playlist.getState(), PP.Player.states.PAUSED);
+                    });
+                    
+                    it("should have a current player", function() {
+                        var player = playlist.getCurrentPlayer();
+                        a.isDefined(player);
+                        a.equal(player.getState(), PP.Player.states.PAUSED);
+                    });
+                    
+                });
+                
+                describe("#finish", function() {
+                    
+                    before(function() {
+                        playlist.seek(0.99);
+                        playlist.play();
+                    });
+                    
+                    it("should fire a finish event", function(done) {
+                        playlist.once("finish", done);
+                    });
+                    
+                    it("should be in finished state", function() {
+                        a.equal(playlist.getState(), PP.Player.states.FINISHED);
+                    });
+                    
+                    it("should have a current player", function() {
+                        var player = playlist.getCurrentPlayer();
+                        a.isDefined(player);
+                        a.equal(player.getState(), PP.Player.states.FINISHED);
+                    });
+                    
+                });
+                
+                describe("#nextPlayer", function() {
+                    
+                    var firstPlayer;
+                    before(function() {
+                        firstPlayer = playlist.getCurrentPlayer();
+                    });
+                    
+                    it("should have a new player", function() {
+                        playlist.nextPlayer();
+                        a.notEqual(firstPlayer, playlist.getCurrentPlayer());
+                    });
+                    
+                    it("should play automatically", function(done) {
+                        playlist.once("play", function() {
+                            debugger;
+                            a.equal(playlist.getState(), PP.Player.states.PLAYING);
+                            done();
+                        });
+                    });
+                    
+                    it("should play from the beginning", function() {
+                        playlist.nextPlayer(true);
+                        a.equal(firstPlayer, playlist.getCurrentPlayer());
+                    });
+                });
+                
+                describe("#setPlayerById", function() {
+                    
+                    var current;
+                    before(function() {
+                        current = playlist.getCurrentPlayer();
+                    });
+                    
+                    it("should switch the player", function(done) {
+                        var next = playlist.models[1];
+                        playlist.once("playerChange", function() {
+                            a.notEqual(current, next);
+                            done();
+                        });
+                        playlist.setPlayerById(next.id);
+                    });
+                    
+                });
+                
+                describe("#previousPlayer", function() {
+                    
+                    var firstPlayer;
+                    before(function() {
+                        playlist.setPlayer(playlist.models[1]);
+                        firstPlayer = playlist.getCurrentPlayer();
+                    });
+                    
+                    it("should have a new player", function() {
+                        playlist.previousPlayer();
+                        a.notEqual(firstPlayer, playlist.getCurrentPlayer());
+                    });
+                    
+                    it("should play automatically", function(done) {
+                        playlist.once("play", function() {
+                            a.equal(playlist.getState(), PP.Player.states.PLAYING);
+                            done();
+                        });
+                    });
+                    
+                    it("should play from the end", function() {
+                        playlist.previousPlayer(true);
+                        a.equal(firstPlayer, playlist.getCurrentPlayer());
+                    });
+                    
+                });
+                
+                describe("#seekTo", function() {
+                    
+                    before(function(done) {
+                        playlist.stop();
+                        playlist.play();
+                        playlist.once("play", done);
+                    });
+                    
+                    it("should seek to an absolute position", function() {
+                        playlist.seekTo(10 * 1000);
+                        a.equal(playlist.getCurrentPosition(), 10 * 1000);
+                    });
+                    
+                    it("should fire a progress event", function(done) {
+                        playlist.once("playProgress", function(data) {
+                            a.equal(data.currentPosition, 20 * 1000);
+                            done();
+                        });
+                        
+                        playlist.seekTo(20 * 1000);
+                    });
+                    
+                    it("should play from this position", function(done) {
+                        
+                        // YouTube needs some secounds to realize it's
+                        // supposed to play from a specified position.
+                        // We wait until we get a good progress event
+                        // to succed the test.
+                        // If there is no good event the timeout will
+                        // bring the fail.
+                        playlist.on("playProgress", function(data) {
+                            console.log(data.currentPosition / 10000, Math.floor(data.currentPosition / 10000));
+                            if(Math.floor(data.currentPosition / 10000) === 2) {
+                                a.ok(true);
+                                done();
+                            }
+                        })
+                        
+                        playlist.play();
+                    });
+                    
+                });
+            
+                describe("#seek", function() {
+                    
+                    it("should seek to a relative position", function() {
+                        playlist.seek(0.5);
+                        a.equal(playlist.getCurrentPosition(), playlist.getCurrentPlayer().getDuration() * 0.5);
+                    });
+                    
+                });
+                    
+                
+            });
+            
+            mocha.run();
+            
+        </script>
+    </body>
+</html>

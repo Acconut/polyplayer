@@ -6,6 +6,7 @@
     "gulp-footer": "~0.4.0",
     "gulp-uglify": "~0.1.0",
     "gulp-header": "~0.4.0",
-    "gulp": "~3.2.1"
+    "gulp": "~3.2.1",
+    "node-static": "~0.7.3"
   }
 }

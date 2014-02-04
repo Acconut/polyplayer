@@ -1,6 +1,7 @@
 
     var PP = {};
     PP.Player = Player;
+    PP.Playlist = Playlist;
     
     window.PP = PP;
     

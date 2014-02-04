@@ -61,7 +61,7 @@ More examples are in `examples/`.
 ```
 
 ## API
-
+### Player
 `Player` is an instace of `Backbone.Model` and has all its [functions](http://backbonejs.org/#Model) inherited. It's located under the PP namespace inside `window` (`PP.Player`).
 
 `new Player(options)`
@@ -117,7 +117,7 @@ This will fire a `playProgress` event.
 Seeks to a absolute position in the video. `ms` is the number in ms to seek to, e.g. 12000.
 This will fire a `playProgress` event.
 
-## Events
+**Events**
 
 Use Backbone.Model's `on`, `off` and `once` function to listen to events.
 
@@ -145,6 +145,59 @@ Fired continously when the video plays or seeks.
 
 Fired when the states changes. See `Player#getState()`.
 
+### Playlist
+
+`Playlist` is an instace of `Backbone.Collection` and has all its [functions](http://backbonejs.org/#Collection) inherited. It's located under the PP namespace inside `window` (`PP.Playlist`).
+
+`new Player(players, options)`
+
+* `players` is an array which contains `Player`s which should be add instantly.
+Creates a new player instance. `options` in an object:
+* `container` String: CSS selector string to match the parent element in which later added players are injected.
+
+`Playlist#add(player)`
+Add a player to the list. `player` is either an instance of `Player` or an options object which will be passed to the `Player`'s contructor.
+
+`Playlist#getCurrentPlayer()`
+Returns the current player object or `null`.
+
+`Playlist#setPlayer(playerObj)`
+`playerObj` should be an instance on `Player` which will be set as the current player.
+
+`Playlist#setPlayerById(playerId)`
+Same as `setPlayer` but gets the player using its `id`.
+
+`Playlist#nextPlayer(startFromBeginning)`
+Set the next player in the list as the current one. If `startFromBeginning` is true it will start from the beginning again if it reaches the bottom.
+
+`Playlist#previousPlayer(startFromEnd)`
+Sets the previous player in the list as the current one. If `startFromEnd` is true it will start from the end again it it reaches the top.
+
+`Playlist#randomPlayer()`
+Sets a random player as the current player.
+
+`Playlist#loopMode`
+Represents the current strategy what happends when a player finishes (`finish` event is fired):
+
+* Playlist.loopModes.NO: 0 (Nothing, default)
+* Playlist.loopModes.NEXT: 1 (Play the next player but don't repeat the list)
+* Playlist.loopModes.LOOP: 2 (Play the next player and repeat the list)
+* Playlist.loopModes.RANDOM: 3 (Choose a random player to be next)
+
+It also exposes following functions which behave the same as `Player` does on the current player:
+
+* `Playlist#play()`
+* `Playlist#pause()`
+* `Playlist#stop()`
+* `Playlist#getCurrentPosition()`
+* `Playlist#getState()`
+* `Playlist#seek(percent)`
+
+**Events**
+
+Since it's a Backbone.Collection, `Playlist` triggers all events which are emitted by its models (see Player's event).
+Additionally it fires a `playerChange` event when a new player is set.
+
 ## Browser support
 
 Tested successfully in Chrome 31 and Firefox 26.
@@ -153,7 +206,7 @@ Mobile browsers need flash or support HTML5's video and audio elements.
 
 ## Testing
 
-Use `test/mocha.html` to run tests. You'll need Flash in order to succed all tests.
+Use `test/player.html` and `test/playlist.html` to run tests. You'll need Flash in order to succed all tests.
 
 ## Building
 
