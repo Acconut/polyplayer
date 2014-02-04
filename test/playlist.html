@@ -29,27 +29,6 @@
             mocha.setup("bdd");
             var a = chai.assert;
             
-            var providers = {
-                YouTube : {
-                    url: "http://www.youtube.com/watch?v=IzTYvTI7OnI",
-                    title: "Mashup Germany - The Rock Harmony",
-                    duration: 208000,
-                    createdAt: new Date("Tue, 20 Aug 2013 20:41:43 GMT").toString()
-                },
-                Soundcloud: {
-                    url: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet",
-                    title: "Mashup-Germany - Berlin Banquet Bootleg",
-                    duration: 233806,
-                    createdAt: new Date("Fri, 06 Apr 2012 11:49:43 GMT")
-                },
-                Vimeo: {
-                    url: "http://vimeo.com/18890266",
-                    title: "Mashup-Germany \u2013 I just came to say hello",
-                    duration: 231000,
-                    createdAt: new Date("Mon, 17 Jan 2011 15:33:58 GMT")
-                }
-            };
-            
             var playlist;
             describe("Playlist", function() {
                 
@@ -192,7 +171,6 @@
                     
                     it("should play automatically", function(done) {
                         playlist.once("play", function() {
-                            debugger;
                             a.equal(playlist.getState(), PP.Player.states.PLAYING);
                             done();
                         });
@@ -280,7 +258,6 @@
                         // If there is no good event the timeout will
                         // bring the fail.
                         playlist.on("playProgress", function(data) {
-                            console.log(data.currentPosition / 10000, Math.floor(data.currentPosition / 10000));
                             if(Math.floor(data.currentPosition / 10000) === 2) {
                                 a.ok(true);
                                 done();
