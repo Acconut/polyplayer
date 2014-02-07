@@ -187,7 +187,6 @@ var Playlist = Backbone.Collection.extend({
         // Remove old events listeners
         var old = this.getCurrentPlayer();
         if(old != null) {
-            //this.stopListening(old);
             old.stop();
         }
         
@@ -201,21 +200,6 @@ var Playlist = Backbone.Collection.extend({
         if(!!autoplay) {
             newPlayer.play();
         }
-        
-        // Add event listeners
-        //this.listenTo(newPlayer, "finish", this._onFinish);
-        
-        /*
-        // Pipe all events from our player to the collection
-        var pipeEvent = function(event) {
-            return _.bind(this.trigger, event);
-        };
-        
-        var events = [ "play", "pause", "stop", "playProgress", "stateChange" ];
-        for(var i = 0, e; e = events[i++];) {
-            this.listenTo(model, e, _.bind(this.trigger, this, e));
-        }
-        */
         
         return newPlayer;
         
@@ -278,7 +262,6 @@ var Playlist = Backbone.Collection.extend({
     },
     
     getCurrentPosition: function() {
-        //debugger;
         return this.getCurrentPlayer().getCurrentPosition();
     },
     
@@ -446,19 +429,24 @@ Player.prototype._providers.soundcloud = Model.extend({
             videoId: options.videoId
         });
         
-        var el = document.createElement("iframe");
-        el.setAttribute("id", options.playerId);
-        el.setAttribute("src", "https://w.soundcloud.com/player/?url=" + encodeURIComponent(options.videoUrl));
-        options.container.appendChild(el);
+        var this_ = this;
+        this_.widget = null;
+        this._loadScript(function() {
+            
+            var el = document.createElement("iframe");
+            el.setAttribute("id", options.playerId);
+            el.setAttribute("src", "https://w.soundcloud.com/player/?url=" + encodeURIComponent(options.videoUrl));
+            options.container.appendChild(el);
+            
+            
+            var w = this_.widget = SC.Widget(el);
+            w.bind(SC.Widget.Events.READY, _.bind(this_._onReady, this_));
+            w.bind(SC.Widget.Events.PAUSE, _.bind(this_._onPause, this_));
+            w.bind(SC.Widget.Events.PLAY, _.bind(this_._onPlay, this_));
+            w.bind(SC.Widget.Events.FINISH, _.bind(this_._onFinish, this_));
+            w.bind(SC.Widget.Events.PLAY_PROGRESS, _.bind(this_._onPlayProgress, this_));
         
-        
-        var w = this.widget = SC.Widget(el);
-        w.bind(SC.Widget.Events.READY, _.bind(this._onReady, this));
-        w.bind(SC.Widget.Events.PAUSE, _.bind(this._onPause, this));
-        w.bind(SC.Widget.Events.PLAY, _.bind(this._onPlay, this));
-        w.bind(SC.Widget.Events.FINISH, _.bind(this._onFinish, this));
-        w.bind(SC.Widget.Events.PLAY_PROGRESS, _.bind(this._onPlayProgress, this));
-        
+        });
         
     },
     
@@ -487,6 +475,25 @@ Player.prototype._providers.soundcloud = Model.extend({
             this_._setState("stopped");
             this_.trigger("stop");
         }, 100);
+    },
+    
+    _loadScript: function(callback) {
+        
+        // Soundcloud script already loaded
+        if("SC" in window && SC) {
+            callback();
+            return;
+        }
+        
+        var tag = document.createElement("script");
+        tag.src = "https://w.soundcloud.com/player/api.js";
+        
+        tag.onload = function() {
+            callback();
+        };
+        
+        document.body.appendChild(tag);
+        
     },
     
     _fetchDetails: function(cb) {

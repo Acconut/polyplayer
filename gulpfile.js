@@ -50,12 +50,11 @@ gulp.task("build-minify", function() {
 
 /**
  * Concat and minify all files from ./lib into ./polyplayer.js
- * All vendors (soundcloud and vimeo (froogaloop.js)) are included
+ * All vendors (vimeo (froogaloop.js)) are included
  */
 gulp.task("build-vendor", function() {
         
     gulp.src([
-        "./vendor/soundcloud.js",
         "./vendor/froogaloop.js",
         "./lib/player.js",
         "./lib/playlist.js",
