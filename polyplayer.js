@@ -664,6 +664,10 @@ Player.prototype._providers.youtube = Model.extend({
     _seekTimeoutSet: false,
     
     _setInterval: function() {
+        
+        // Clear any previous set intervals
+        this._clearInterval();
+        
         var this_ = this;
         
         this._intervalId = setInterval(function() {
