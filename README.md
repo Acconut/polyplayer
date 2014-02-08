@@ -32,7 +32,7 @@ More examples are in `examples/`.
             /**
              * Create new Soundcloud player
              */
-            var player = new Player({
+            var player = new PP.Player({
                 
                 videoUrl: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet",
                 
@@ -156,27 +156,35 @@ Creates a new player instance. `options` in an object:
 * `container` String: CSS selector string to match the parent element in which later added players are injected.
 
 `Playlist#add(player)`
+
 Add a player to the list. `player` is either an instance of `Player` or an options object which will be passed to the `Player`'s contructor.
 
 `Playlist#getCurrentPlayer()`
+
 Returns the current player object or `null`.
 
 `Playlist#setPlayer(playerObj)`
+
 `playerObj` should be an instance on `Player` which will be set as the current player.
 
 `Playlist#setPlayerById(playerId)`
+
 Same as `setPlayer` but gets the player using its `id`.
 
 `Playlist#nextPlayer(startFromBeginning)`
+
 Set the next player in the list as the current one. If `startFromBeginning` is true it will start from the beginning again if it reaches the bottom.
 
 `Playlist#previousPlayer(startFromEnd)`
+
 Sets the previous player in the list as the current one. If `startFromEnd` is true it will start from the end again it it reaches the top.
 
 `Playlist#randomPlayer()`
+
 Sets a random player as the current player.
 
 `Playlist#loopMode`
+
 Represents the current strategy what happends when a player finishes (`finish` event is fired):
 
 * Playlist.loopModes.NO: 0 (Nothing, default)
@@ -230,7 +238,7 @@ gulp build-minify
 gulp build-vendor
 
 # Buid all
-gulp build-all
+gulp all
 ```
 
 See `gulpfile.js` for all tasks.
