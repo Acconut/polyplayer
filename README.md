@@ -21,8 +21,8 @@ More examples are in `examples/`.
         <div id="player"></div>
         
         <!-- Polyplayer requires Backbone and Underscore -->
-        <script src="../bower_components/underscore/underscore.js"></script>
-        <script src="../bower_components/backbone/backbone.js"></script>
+        <script src="../node_modules/underscore/underscore.js"></script>
+        <script src="../node_modules/backbone/backbone.js"></script>
         
         <!-- Polyplayer itself including vendor scripts -->
         <script src="../polyplayer.vendor.min.js"></script>
@@ -218,15 +218,14 @@ Use `test/player.html` and `test/playlist.html` to run tests. You'll need Flash 
 
 ## Building
 
-We use [gulp](https://github.com/wearefractal/gulp) for building and bower for dependency management:
+We use [gulp](https://github.com/wearefractal/gulp) for building and npm for dependency management:
 
 ```bash
-# Install gulp and bower cli
-npm install -g gulp bower
+# Install gulp
+npm install -g gulp
 
 # Fetch all dependecies
 npm install
-bower install
 
 # Build polyplayer.js
 gulp build

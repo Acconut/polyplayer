@@ -2,11 +2,18 @@
   "name": "polyplayer",
   "version": "0.0.0-dev",
   "devDependencies": {
+    "chai": "^2.1.1",
+    "gulp": "~3.2.1",
     "gulp-concat": "~2.1.4",
     "gulp-footer": "~0.4.0",
-    "gulp-uglify": "~0.1.0",
     "gulp-header": "~0.4.0",
-    "gulp": "~3.2.1",
-    "node-static": "~0.7.3"
+    "gulp-uglify": "~0.1.0",
+    "mocha": "^2.2.1",
+    "node-static": "~0.7.3",
+    "zepto": "0.0.4"
+  },
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "underscore": "^1.8.2"
   }
 }
