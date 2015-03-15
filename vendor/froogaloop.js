@@ -1,5 +1,5 @@
 // Init style shamelessly stolen from jQuery http://jquery.com
-var Froogaloop = (function(){
+module.exports = (function(){
     // Define a local copy of Froogaloop
     function Froogaloop(iframe) {
         // The Froogaloop object is actually just the init constructor
@@ -282,7 +282,6 @@ var Froogaloop = (function(){
         window.attachEvent('onmessage', onMessageReceived);
     }
 
-    // Expose froogaloop to the global object
-    return (window.Froogaloop = window.$f = Froogaloop);
+    return Froogaloop;
 
 })();

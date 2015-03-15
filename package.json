@@ -1,19 +1,23 @@
 {
   "name": "polyplayer",
   "version": "0.0.0-dev",
+  "main": "./polyplayer.js",
   "devDependencies": {
+    "browserify": "^9.0.3",
     "chai": "^2.1.1",
-    "gulp": "~3.2.1",
-    "gulp-concat": "~2.1.4",
-    "gulp-footer": "~0.4.0",
-    "gulp-header": "~0.4.0",
-    "gulp-uglify": "~0.1.0",
     "mocha": "^2.2.1",
     "node-static": "~0.7.3",
+    "uglify-js": "^2.4.17",
+    "watchify": "^2.4.0",
     "zepto": "0.0.4"
   },
   "dependencies": {
     "backbone": "^1.1.2",
     "underscore": "^1.8.2"
+  },
+  "scripts": {
+    "build": "browserify ./polyplayer.js --s PP > dist/polyplayer.js",
+    "build-min": "browserify ./polyplayer.js --s PP | uglifyjs > dist/polyplayer.min.js",
+    "watch": "watchify ./polyplayer.js --s PP -o dist/polyplayer.js -v"
   }
 }

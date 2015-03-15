@@ -20,12 +20,8 @@ More examples are in `examples/`.
         <!-- This element wil be the player's parent node -->
         <div id="player"></div>
         
-        <!-- Polyplayer requires Backbone and Underscore -->
-        <script src="../node_modules/underscore/underscore.js"></script>
-        <script src="../node_modules/backbone/backbone.js"></script>
-        
         <!-- Polyplayer itself including vendor scripts -->
-        <script src="../polyplayer.vendor.min.js"></script>
+        <script src="../dist/polyplayer.min.js"></script>
         
         <script>
             
@@ -218,29 +214,19 @@ Use `test/player.html` and `test/playlist.html` to run tests. You'll need Flash 
 
 ## Building
 
-We use [gulp](https://github.com/wearefractal/gulp) for building and npm for dependency management:
-
 ```bash
-# Install gulp
-npm install -g gulp
-
 # Fetch all dependecies
 npm install
 
 # Build polyplayer.js
-gulp build
+npm run build
 
 # Build polyplayer.min.js
-gulp build-minify
+npm run build-min
 
-# Build polyplayer.vendor.min.js
-gulp build-vendor
-
-# Buid all
-gulp all
+# Watch lib/* and build polyplayer.js on changes
+npm run watch
 ```
-
-See `gulpfile.js` for all tasks.
 
 ## License
 

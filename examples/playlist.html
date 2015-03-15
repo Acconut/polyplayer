@@ -33,22 +33,16 @@
         <div id="duration"></div>
         <img id="thumbnail">
         
-        <script src="../node_modules/underscore/underscore.js"></script>
-        <script src="../node_modules/backbone/backbone.js"></script>
         <script src="//w.soundcloud.com/player/api.js"></script>
         
-        <script src="../lib/player.js"></script>
-        <script src="../lib/model.js"></script>
-        <script src="../lib/vimeo.js"></script>
-        <script src="../lib/soundcloud.js"></script>
-        <script src="../vendor/froogaloop.js"></script>
-        <script src="../lib/playlist.js"></script>
+        <script src="../dist/polyplayer.js"></script>
         
         <!-- Used for testing, no dependency -->
-        <script src="../node_modules/zepto/zepto.js"></script>
+        <script src="../node_modules/underscore/underscore.js"></script>
+        <script src="../node_modules/zepto/zepto.min.js"></script>
         
         <script>
-            var statesByName = _.invert(Player.states),
+            var statesByName = _.invert(PP.Player.states),
                 $state = $("#state"),
                 $playProgNum = $("#playProgressNum"),
                 $playProg = $("#playProgress"),
@@ -63,7 +57,7 @@
                 $next = $("#next"),
                 $loopmode = $("#loopmode");
             
-            var player = new Playlist([], {
+            var player = new PP.Playlist([], {
                 
                 container: "#player"
                 
@@ -121,7 +115,7 @@
             player.add({ videoUrl: "https://soundcloud.com/mashupgermany/mashup-germany-berlin-banquet" });
             player.add({ videoUrl: "http://vimeo.com/18890266" });
             
-            player.loopMode = Playlist.loopModes.LOOP;
+            player.loopMode = PP.Playlist.loopModes.LOOP;
             
             $loopmode.on("change", function() {
                 player.loopMode = parseInt($loopmode.val(), 10);

@@ -21,19 +21,14 @@
         <div id="duration"></div>
         <img id="thumbnail">
         
-        <script src="../node_modules/underscore/underscore.js"></script>
-        <script src="../node_modules/backbone/backbone.js"></script>
-        
-        <script src="../lib/player.js"></script>
-        <script src="../lib/model.js"></script>
-        <script src="../lib/vimeo.js"></script>
-        <script src="../vendor/froogaloop.js"></script>
+        <script src="../dist/polyplayer.js"></script>
         
         <!-- Used for testing, no dependency -->
-        <script src="../node_modules/zepto/zepto.js"></script>
+        <script src="../node_modules/underscore/underscore.js"></script>
+        <script src="../node_modules/zepto/zepto.min.js"></script>
         
         <script>
-            var statesByName = _.invert(Player.states),
+            var statesByName = _.invert(PP.Player.states),
                 $state = $("#state"),
                 $playProgNum = $("#playProgressNum"),
                 $playProg = $("#playProgress"),
@@ -46,7 +41,7 @@
                 $seek = $("#seek"),
                 $seekTo = $("#seekTo");
             
-            var player = new Player({
+            var player = new PP.Player({
                 
                 videoUrl: "http://vimeo.com/18890266",
                 
@@ -95,6 +90,7 @@
             $seek.click(function() {
                 player.seek(parseFloat(prompt("Enter a number between 0 and 1"), 10));
             });
+            
             
             $seekTo.click(function() {
                 player.seekTo(parseInt(prompt("Enter ms"), 10));
