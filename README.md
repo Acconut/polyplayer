@@ -62,7 +62,7 @@ More examples are in `examples/`.
 
 ## API
 ### Player
-`Player` is an instace of `Backbone.Model` and has all its [functions](http://backbonejs.org/#Model) inherited. It's located under the PP namespace inside `window` (`PP.Player`).
+`Player` is an instance of `Backbone.Model` and has all its [functions](http://backbonejs.org/#Model) inherited. It's located under the PP namespace inside `window` (`PP.Player`).
 
 `new Player(options)`
 
@@ -147,7 +147,7 @@ Fired when the states changes. See `Player#getState()`.
 
 ### Playlist
 
-`Playlist` is an instace of `Backbone.Collection` and has all its [functions](http://backbonejs.org/#Collection) inherited. It's located under the PP namespace inside `window` (`PP.Playlist`).
+`Playlist` is an instance of `Backbone.Collection` and has all its [functions](http://backbonejs.org/#Collection) inherited. It's located under the PP namespace inside `window` (`PP.Playlist`).
 
 `new Player(players, options)`
 
